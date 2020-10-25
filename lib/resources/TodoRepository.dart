@@ -19,10 +19,9 @@ class TodoRepository {
   }
 
   Future<bool> delete(Todo todo) async {
-    var searchedItem =
-        _todoList.where((element) => element.id == todo.id).first;
-    if (searchedItem != null) {
-      _todoList.remove(searchedItem);
+    var position = _todoList.indexOf(todo);
+    if (position >= 0) {
+      _todoList.removeAt(position);
       return true;
     }
 
@@ -30,8 +29,9 @@ class TodoRepository {
   }
 
   Future<Todo> update(Todo todo) async {
-    delete(todo);
-    insert(todo);
+    var position = _todoList.indexOf(todo);
+    _todoList[position].done = todo.done;
+    _todoList[position].title = todo.title;
 
     return todo;
   }

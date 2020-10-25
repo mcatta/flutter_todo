@@ -19,6 +19,13 @@ class TodoBloc {
   void addTodo(String title) {
     _todoRepository.insert(Todo(title));
   }
+
+  void updateTodo(Todo todo, bool state) {
+    todo.done = state;
+    _todoRepository.update(todo);
+  }
+
+  void deleteTodo(Todo todo) => _todoRepository.delete(todo);
 }
 
 final bloc = TodoBloc();

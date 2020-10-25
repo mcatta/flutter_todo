@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_list/blocs/TodoBloc.dart';
-import 'package:todo_list/models/Todo.dart';
+import 'package:todo_list/ui/TodoListView.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -21,55 +21,48 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _TodoListState extends State<TodoList> {
-  @override
-  Widget build(BuildContext context) {
-    bloc.fetchTodos();
-
-    return StreamBuilder(
-      stream: bloc.allTodos,
-      builder: (context, AsyncSnapshot<List<Todo>> snapshot) {
-        if (snapshot.hasData) {
-          return buildList(snapshot.data);
-        } else if (snapshot.hasError) {
-          return Text(snapshot.error.toString());
-        }
-        return Center(child: CircularProgressIndicator());
-      },
-    );
-  }
-
-  Widget buildList(List<Todo> todols) {
-    var listView = ListView(
-        scrollDirection: Axis.vertical,
-        children: todols.map((e) {
-          return Container(
-              height: 50,
-              color: Colors.green[100],
-              child: Center(child: Text(e.title)));
-        }).toList());
-    return listView;
-  }
-}
-
-class TodoList extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _TodoListState();
-}
-
 class _HomePageState extends State<HomePage> {
-  var _incremental = 0;
+  final _textEditingController = TextEditingController();
 
-  void _addTodo() {
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+  }
+
+  void onAddTodo() {
     setState(() {
-      _incremental++;
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      bloc.addTodo("TODO N $_incremental");
+      bloc.addTodo(_textEditingController.text);
+      _textEditingController.text = "";
+      Navigator.pop(context);
     });
+  }
+
+  void _promptModalTodoAdd(context) {
+    final titleField = TextField(
+        controller: _textEditingController,
+        decoration:
+            InputDecoration(border: InputBorder.none, hintText: 'TOTO  title'));
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Container(
+            child: new Wrap(
+              children: <Widget>[
+                titleField,
+                new ListTile(
+                  leading: new Icon(Icons.save),
+                  title: new Text('Add'),
+                  onTap: () => {onAddTodo()},
+                ),
+              ],
+            ),
+          );
+        });
   }
 
   @override
@@ -86,9 +79,11 @@ class _HomePageState extends State<HomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: TodoList(),
+      body: TodoListView(),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addTodo,
+        onPressed: () {
+          _promptModalTodoAdd(context);
+        },
         tooltip: 'Add a todo',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
