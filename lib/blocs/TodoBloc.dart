@@ -16,16 +16,16 @@ class TodoBloc {
 
   void dispose() => _todosFetcher.close();
 
-  void addTodo(String title) {
-    _todoRepository.insert(Todo(title));
+  void addTodo(String title) async {
+    await _todoRepository.insert(Todo(title));
   }
 
-  void updateTodo(Todo todo, bool state) {
+  void updateTodo(Todo todo, bool state) async {
     todo.done = state;
-    _todoRepository.update(todo);
+    await _todoRepository.update(todo);
   }
 
-  void deleteTodo(Todo todo) => _todoRepository.delete(todo);
+  void deleteTodo(Todo todo) async => await _todoRepository.delete(todo);
 }
 
 final bloc = TodoBloc();

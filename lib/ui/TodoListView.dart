@@ -69,6 +69,11 @@ class _TodoListState extends State<TodoListView> {
                           fit: FlexFit.tight,
                           child: Text(
                             todo.title,
+                            style: TextStyle(
+                              decoration: todo.done
+                                  ? TextDecoration.lineThrough
+                                  : TextDecoration.none,
+                            ),
                           )),
                       Flexible(
                         child: IconButton(
