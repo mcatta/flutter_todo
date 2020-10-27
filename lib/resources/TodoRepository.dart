@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 import '../models/Todo.dart';
 
 class TodoRepository {
-  static const tableTofido = "tbTodo";
+  static const tableTodo = "tbTodo";
 
   Future<Database> _db() async {
     return openDatabase(
